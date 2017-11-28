@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -69,16 +70,21 @@ public final class ExportSpecToFile extends AbstractViewAction<SaBatchUI> {
 
     @Override
     protected void process(SaBatchUI cur) {
-        try {
-            List<Exportable> exportables = new ArrayList<>();
-            for (SaItem saItem : cur.getSelection()) {
-                exportables.add(new ExportableSpec(saItem));
+        new Thread(() -> {
+            try {
+                ProgressHandle progress = ProgressHandle.createHandle(Bundle.CTL_ExportSpecToFile());
+                progress.start();
+                List<Exportable> exportables = new ArrayList<>();
+                for (SaItem saItem : cur.getSelection()) {
+                    exportables.add(new ExportableSpec(saItem));
+                }
+                FileBroker broker = new FileBroker();
+                broker.performExport(exportables);
+                progress.finish();
+            } catch (IOException ex) {
+                Logger.getLogger(ExportSpecToFile.class.getName()).log(Level.SEVERE, null, ex);
             }
-            FileBroker broker = new FileBroker();
-            broker.performExport(exportables);
-        } catch (IOException ex) {
-            Logger.getLogger(ExportSpecToFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }).start();
     }
 
     private static final class ExportableSpec implements Exportable {

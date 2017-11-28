@@ -46,12 +46,12 @@ public class ImportableSpec<X extends ISaSpecification> implements Importable {
                     X spec;
                     try {
                         spec = clazz.newInstance();
+                        spec.read(o);
+                        return spec;
                     } catch (InstantiationException | IllegalAccessException ex) {
                         Logger.getLogger(ImportableSpec.class.getName()).log(Level.SEVERE, null, ex);
                         return null;
                     }
-                    spec.read(o);
-                    return spec;
                 })
                 .ifPresent(spec -> {
                     ImportData data = new ImportData(spec, config.getName());

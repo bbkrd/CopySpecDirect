@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -74,13 +75,17 @@ public final class ImportSpecFromFile extends AbstractViewAction<SaBatchUI> {
         List<Importable> list = new ArrayList<>();
         list.add(new ImportableSpec(X13Specification.class));
         list.add(new ImportableSpec(TramoSeatsSpecification.class));
-
-        FileBroker broker = new FileBroker();
-        try {
-            broker.performImport(list);
-        } catch (IOException ex) {
-            Logger.getLogger(ImportSpecFromFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(() -> {
+            ProgressHandle progress = ProgressHandle.createHandle("Reading Specs");
+            progress.start();
+            FileBroker broker = new FileBroker();
+            try {
+                broker.performImport(list);
+            } catch (IOException ex) {
+                Logger.getLogger(ImportSpecFromFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            progress.finish();
+        }).start();
 
         ImportData spec;
         switch (specs.size()) {
