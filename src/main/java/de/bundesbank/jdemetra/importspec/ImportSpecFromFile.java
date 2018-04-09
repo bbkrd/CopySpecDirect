@@ -1,15 +1,15 @@
-/* 
+/*
  * Copyright 2017 Deutsche Bundesbank
- * 
+ *
  * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent 
+ * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
  * Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl.html
- * 
+ *
  * Unless required by applicable law or agreed to in
  * writing, software distributed under the Licence is
  * distributed on an "AS IS" basis,
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -89,27 +90,29 @@ public final class ImportSpecFromFile extends AbstractViewAction<SaBatchUI> {
                 Logger.getLogger(ImportSpecFromFile.class.getName()).log(Level.SEVERE, null, ex);
             }
             progress.finish();
-        }).start();
 
-        ImportData spec;
-        switch (specs.size()) {
-            case 0:
+            ImportData spec;
+            switch (specs.size()) {
+                case 0:
+                    return;
+                case 1:
+                    spec = specs.get(0);
+                    break;
+                default:
+                    spec = (ImportData) JOptionPane.showInputDialog(cur, "Spec", "Choose Specification", JOptionPane.QUESTION_MESSAGE, null, specs.toArray(new ImportData[specs.size()]), null);
+            }
+
+            if (spec == null) {
                 return;
-            case 1:
-                spec = specs.get(0);
-                break;
-            default:
-                spec = (ImportData) JOptionPane.showInputDialog(cur, "Spec", "Choose Specification", JOptionPane.QUESTION_MESSAGE, null, specs.toArray(new ImportData[specs.size()]), null);
-        }
+            }
+            SaItem newItem = new SaItem(spec.getSpec(), item.getTs());
+            newItem.setMetaData(item.getMetaData());
+            newItem.setName(item.getRawName());
 
-        if (spec == null) {
-            return;
-        }
-        SaItem newItem = new SaItem(spec.getSpec(), item.getTs());
-        newItem.setMetaData(item.getMetaData());
-        newItem.setName(item.getRawName());
-
-        cur.getCurrentProcessing().replace(item, newItem);
-        cur.redrawAll();
+            cur.getCurrentProcessing().replace(item, newItem);
+            SwingUtilities.invokeLater(() -> {
+                cur.setSelection(new SaItem[]{newItem});
+            });
+        }).start();
     }
 }
