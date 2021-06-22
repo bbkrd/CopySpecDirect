@@ -74,7 +74,7 @@ public final class ImportSpecFromFile extends AbstractViewAction<SaBatchUI> {
     protected void process(SaBatchUI cur) {
         SaItem item = cur.getSelection()[0];
 
-        List<ImportData> specs = ImportableSpec.list;
+        List<ImportData> specs = ImportableSpec.LIST;
         specs.clear();
 
         List<Importable> list = new ArrayList<>();

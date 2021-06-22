@@ -30,7 +30,7 @@ import ec.satoolkit.ISaSpecification;
 @lombok.RequiredArgsConstructor
 public class ImportData {
 
-    private final int MAX_LENGTH = 35;
+    private static final int MAX_LENGTH = 35;
 
     private final ISaSpecification spec;
     private final String name;

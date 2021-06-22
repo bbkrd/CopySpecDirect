@@ -1,15 +1,15 @@
-/* 
+/*
  * Copyright 2017 Deutsche Bundesbank
- * 
+ *
  * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent 
+ * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
  * Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl.html
- * 
+ *
  * Unless required by applicable law or agreed to in
  * writing, software distributed under the Licence is
  * distributed on an "AS IS" basis,
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class ImportableSpec<X extends ISaSpecification> implements Importable {
 
-    public static final List<ImportData> list = new ArrayList<>();
+    protected static final List<ImportData> LIST = new ArrayList<>();
     protected final Class<X> clazz;
 
     protected ImportableSpec(Class<X> clazz) {
@@ -70,7 +70,7 @@ public class ImportableSpec<X extends ISaSpecification> implements Importable {
                 })
                 .ifPresent(spec -> {
                     ImportData data = new ImportData(spec, config.getName());
-                    list.add(data);
+                    LIST.add(data);
                 });
     }
 
